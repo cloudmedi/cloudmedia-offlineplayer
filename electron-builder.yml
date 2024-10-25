@@ -34,8 +34,18 @@ linux:
     - deb
   maintainer: electronjs.org
   category: Utility
+  artifactName: ${name}-${version}-${arch}.${ext}
+  executableName: Cloud Media
 appImage:
-  artifactName: ${name}-${version}.${ext}
+  artifactName: ${name}-${version}-${arch}.${ext}
+armv7l:
+  target:
+    - AppImage
+  artifactName: ${name}-${version}-armv7l.${ext}
+arm64:
+  target:
+    - AppImage
+  artifactName: ${name}-${version}-arm64.${ext}
 npmRebuild: false
 publish:
   provider: generic
