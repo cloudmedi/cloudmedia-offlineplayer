@@ -1,4 +1,4 @@
-const { app, shell, BrowserWindow, ipcMain, dialog } = require('electron');
+const { app, shell, BrowserWindow, ipcMain, dialog,globalShortcut } = require('electron');
 const { join } = require('path');
 const { electronApp, optimizer, is } = require('@electron-toolkit/utils');
 
@@ -42,6 +42,9 @@ function createWindow() {
     mainWindow.show();
   });
 
+  globalShortcut.register('Control+I', () => {
+    mainWindow.webContents.openDevTools();
+  });
   mainWindow.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url);
     return { action: 'deny' };
@@ -53,6 +56,7 @@ function createWindow() {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'));
   }
 }
+
 
 app.whenReady().then(() => {
   electronApp.setAppUserModelId('com.electron');

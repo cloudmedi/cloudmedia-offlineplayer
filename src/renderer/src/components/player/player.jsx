@@ -32,29 +32,7 @@ console.log(props)
 
 
 
-/*   async function getCampaigns() {
-    const camApi = "https://app.cloudmedia.com.tr/api/comapi/";
-    const userId = props?.data?.user?.id;
-    try {
-      const response = await axios.get(`${camApi}${userId}`);
-      const campaigns = response.data;
-      const newGroupedCampaigns = {
-        type0: [],
-        type1: [],
-        type2: []
-      };
 
-      if (campaigns && campaigns.data !== null) {
-        campaigns?.forEach(campaign => {
-          newGroupedCampaigns['type' + campaign.CompanyType].push(campaign);
-        });
-      }
-
-      setGroupedCampaigns(newGroupedCampaigns);
-    } catch (error) {
-      console.error('Error fetching campaigns:', error);
-    }
-  } */
 
   async function convertCampaignsToSongs(campaigns) {
    
@@ -312,7 +290,7 @@ console.log(props)
 
       if (matchedCampaign !== undefined) {
     
-        campainAudioPlay(localUrl || matchedCampaign.localPath);
+        campainAudioPlay(localUrl || "file://"+matchedCampaign.localPath);
         _.remove(campainClone, matchedCampaign);
         setCampainClone(campainClone);
       }
@@ -350,7 +328,7 @@ console.log(props)
 
   useEffect(() => {
     if (savedPlaylists.length > 0) {
-      const audioUrl = savedPlaylists[audioIndex]?.playlink;
+      const audioUrl ="file://"+savedPlaylists[audioIndex]?.playlink;
       if (audioUrl) {
         const audioElement = document.getElementById('audio-player');
         audioElement.src = audioUrl;
@@ -403,7 +381,7 @@ console.log(props)
   }, [props?.data?.savedPlaylists]);
 
   useEffect(() => {
-    const audioUrl = savedPlaylists[audioIndex]?.playlink;
+    const audioUrl ="file://"+savedPlaylists[audioIndex]?.playlink;
     if (audioUrl) {
       const audioElement = document.getElementById('audio-player');
       audioElement.src = audioUrl;
@@ -455,7 +433,7 @@ console.log(props)
     const audioElement1 = document.getElementById('audio-player1');
     for (const item of toPlaylist.current) {
    
-      audioElement1.src = item.playlink;
+      audioElement1.src = "file://"+item.playlink;
     }
 
     audioElement1.play();
@@ -492,7 +470,7 @@ console.log(props)
     syncVolume();
   };
 
-  const music = savedPlaylists[audioIndex]?.playlink;
+  const music ="file://"+savedPlaylists[audioIndex]?.playlink;
 
 
   return (
@@ -526,7 +504,7 @@ console.log(props)
         </div>
       </div>
       <div>
-        <audio id="audio-player" ref={audioRef1} src={music}  autoPlay={playing} controls />
+        <audio id="audio-player" ref={audioRef1} src={music}  autoPlay={playing}  controls />
         <audio id="audio-player1" ref={audioRef2} autoPlay={campainPlaying} />
       </div>
       <div className="modal-container">
