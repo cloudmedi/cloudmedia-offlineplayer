@@ -4,7 +4,7 @@
   "description": "Cloudmedia desktop application",
   "main": "./out/main/index.js",
   "author": "Cloud Media",
-  "homepage": "https://app.cloudmedia.com.tr",
+  "homepage": "http://http://localhost:8000",
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",

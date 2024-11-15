@@ -10,7 +10,7 @@ function Playlist(props) {
     const [click, setClick] = useState(0);
     const [searchTerm, setSearchTerm] = useState("");
     const [filteredPlaylists, setFilteredPlaylists] = useState([]);
-    const user = props?.data?.user?.user;
+    const user = props?.data?.user;
     const campaigns = props?.data?.campaigns;
     const [showLogout, setShowLogOut] = useState(false);
    
@@ -52,7 +52,7 @@ function Playlist(props) {
     };
 
     async function checkStatus() {
-        const res = await axios.post(`https://app.cloudmedia.com.tr/api/updateUserStatusApi/${user.id}/offline`).then(res => {
+        const res = await axios.post(`http://localhost:8000/api/updateUserStatusApi/${user.id}/offline`).then(res => {
             return res
         })
         return res
@@ -60,9 +60,11 @@ function Playlist(props) {
 
     const logOut2 = () => {
         checkStatus().then(res => {
+            console.log(res)
             if (res.data.status === "success") {
                 window.electron.ipcRenderer.send("log-out", "log-out");
                 window.location.reload();
+                
             }
         })
     };

@@ -125,6 +125,8 @@ ipcMain.on("log-out", (event, data) => {
 
 ipcMain.on("get-user", async (event) => {
   const user = store.get("userinfo");
+
+
   if (user) {
     try {
       const allPlaylists = await getAllSongsInPlaylists(user);
@@ -141,13 +143,13 @@ ipcMain.on("get-user", async (event) => {
 
 async function getAllSongsInPlaylists(user) {
   try {
-    const response = await axios.get(`https://app.cloudmedia.com.tr/api/playlista/${String(user?.user?.id)}`);
+    const response = await axios.get(`http://127.0.0.1:8000/api/playlista/${String(user?.id)}`);
     if (response.data) {
       const playlists = response.data.Playlist;
       const allPlaylists = [];
 
       for (const playlist of playlists) {
-        const playlistResponse = await axios.get(`https://app.cloudmedia.com.tr/api/getsong/${playlist.id}`);
+        const playlistResponse = await axios.get(`http://127.0.0.1:8000/api/getsong/${playlist.id}`);
         if (playlistResponse.data && playlistResponse.data.song) {
           const songs = playlistResponse.data.song;
           const downloadedSongs = await downloadSongs(songs, playlist.title);
@@ -186,7 +188,8 @@ async function downloadSongs(songs, playlistName) {
 }
 
 async function downloadSong(song, playlistName) {
-  const songUrl = song.playlink;
+  // localhost'u 127.0.0.1 olarak değiştirin
+  const songUrl = song.playlink.replace('http://localhost:8000', 'http://127.0.0.1:8000');
   const fileName = `${song.title}.mp3`;
   const downloadPath = path.join(app.getPath('music'), 'CloudMedia', playlistName, fileName);
 
@@ -199,7 +202,7 @@ async function downloadSong(song, playlistName) {
   }
 
   await fsPromises.mkdir(path.dirname(downloadPath), { recursive: true });
-
+console.log("---------------",songUrl)
   const response = await axios({
     url: songUrl,
     method: 'GET',
@@ -214,6 +217,7 @@ async function downloadSong(song, playlistName) {
     writer.on('error', reject);
   });
 }
+
 
 async function savePlaylistsLocally(playlists) {
   const playlistsPath = path.join(app.getPath('userData'), 'playlists.json');
@@ -232,8 +236,8 @@ async function getOfflinePlaylists() {
 }
 
 async function getCampaigns(user) {
-  const camApi = "https://app.cloudmedia.com.tr/api/comapi/";
-  const userId = user?.user?.id;
+  const camApi = "http://127.0.0.1:8000/api/comapi/";
+  const userId = user?.id;
   try {
     const response = await axios.get(`${camApi}${userId}`);
     const campaigns = response.data;

@@ -38,8 +38,9 @@ function App() {
       window.electron.ipcRenderer.removeListener('data-updated', handleDataUpdate);
     };
   }, []);
+  console.log(user)
   function checkStatus(){
-    axios.post(`https://app.cloudmedia.com.tr/api/updateUserStatusApi/${user.id}/online`).then(res=>{
+    axios.post(`http://localhost:8000/api/updateUserStatusApi/${user.id}/online`).then(res=>{
       console.log(res)
     })
   }

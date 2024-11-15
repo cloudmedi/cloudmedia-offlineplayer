@@ -21,8 +21,8 @@ const [audioUrl,setAudioUrl]=useState("");
 const [playedCampaigns, setPlayedCampaigns] = useState(new Set());
 
   async function getCampaigns() {
-    const camApi="https://app.cloudmedia.com.tr/api/comapi/";
-    const userId = props.data.props.data.user.user.id;
+    const camApi="http://localhost:8000/api/comapi/";
+    const userId = props.data.props.data.user.id;
     await axios.get(`${camApi}${userId}`).then(res => {
      
       const campaigns = res.data;
