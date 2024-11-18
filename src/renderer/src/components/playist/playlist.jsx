@@ -52,7 +52,7 @@ function Playlist(props) {
     };
 
     async function checkStatus() {
-        const res = await axios.post(`http://localhost:8000/api/updateUserStatusApi/${user.id}/offline`).then(res => {
+        const res = await axios.post(`http://172.16.220.25:8000/api/updateUserStatusApi/${user.id}/offline`).then(res => {
             return res
         })
         return res

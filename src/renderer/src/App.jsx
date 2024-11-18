@@ -40,7 +40,7 @@ function App() {
   }, []);
   console.log(user)
   function checkStatus(){
-    axios.post(`http://localhost:8000/api/updateUserStatusApi/${user.id}/online`).then(res=>{
+    axios.post(`http://172.16.220.25:8000/api/updateUserStatusApi/${user.id}/online`).then(res=>{
       console.log(res)
     })
   }

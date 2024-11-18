@@ -15,7 +15,7 @@ const [password,setPasword]=useState("")
 
 async function login() {
     try {
-         await axios.post("http://localhost:8000/auth/login", {
+         await axios.post("http://172.16.220.25:8000/auth/login", {
             email: mail,
             password: password
         }, {

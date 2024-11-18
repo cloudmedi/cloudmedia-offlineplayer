@@ -143,13 +143,13 @@ ipcMain.on("get-user", async (event) => {
 
 async function getAllSongsInPlaylists(user) {
   try {
-    const response = await axios.get(`http://127.0.0.1:8000/api/playlista/${String(user?.id)}`);
+    const response = await axios.get(`http://172.16.220.25:8000/api/playlista/${String(user?.id)}`);
     if (response.data) {
       const playlists = response.data.Playlist;
       const allPlaylists = [];
 
       for (const playlist of playlists) {
-        const playlistResponse = await axios.get(`http://127.0.0.1:8000/api/getsong/${playlist.id}`);
+        const playlistResponse = await axios.get(`http://172.16.220.25:8000/api/getsong/${playlist.id}`);
         if (playlistResponse.data && playlistResponse.data.song) {
           const songs = playlistResponse.data.song;
           const downloadedSongs = await downloadSongs(songs, playlist.title);
@@ -188,8 +188,8 @@ async function downloadSongs(songs, playlistName) {
 }
 
 async function downloadSong(song, playlistName) {
-  // localhost'u 127.0.0.1 olarak değiştirin
-  const songUrl = song.playlink.replace('http://localhost:8000', 'http://127.0.0.1:8000');
+  // 172.16.220.25'u 172.16.220.25 olarak değiştirin
+  const songUrl = song.playlink.replace('http://localhost:8000', 'http://172.16.220.25:8000');
   const fileName = `${song.title}.mp3`;
   const downloadPath = path.join(app.getPath('music'), 'CloudMedia', playlistName, fileName);
 
@@ -236,7 +236,7 @@ async function getOfflinePlaylists() {
 }
 
 async function getCampaigns(user) {
-  const camApi = "http://127.0.0.1:8000/api/comapi/";
+  const camApi = "http://172.16.220.25:8000/api/comapi/";
   const userId = user?.id;
   try {
     const response = await axios.get(`${camApi}${userId}`);
@@ -277,7 +277,9 @@ async function downloadCampaigns(groupedCampaigns) {
 }
 
 async function downloadCampaignFile(campaign) {
-  const fileUrl = campaign.path;
+  const fileUrl = campaign.path.replace('https://app.cloudmedia.com.tr', 'http://172.16.220.25:8000');
+
+
   const fileName = `campaign_${campaign.id}${path.extname(fileUrl)}`;
   const downloadPath = path.join(app.getPath('userData'), 'Campaigns', fileName);
 

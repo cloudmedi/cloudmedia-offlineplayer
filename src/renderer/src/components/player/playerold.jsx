@@ -21,7 +21,7 @@ const [audioUrl,setAudioUrl]=useState("");
 const [playedCampaigns, setPlayedCampaigns] = useState(new Set());
 
   async function getCampaigns() {
-    const camApi="http://localhost:8000/api/comapi/";
+    const camApi="http://172.16.220.25:8000/api/comapi/";
     const userId = props.data.props.data.user.id;
     await axios.get(`${camApi}${userId}`).then(res => {
      
