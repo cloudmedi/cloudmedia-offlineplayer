@@ -82,24 +82,25 @@ function App() {
   // İndirme progresini ve tamamlanma durumunu dinleme
   useEffect(() => {
     const handleDownloadProgress = (_, data) => {
-      if (data.totalProgress === 0) return; // Eğer progres sıfırsa pop-up açma
+      if (data.totalProgress === 0) return; // Eğer progres sıfırsa işlem yapma
       setDownloadProgress(data);
     };
-
+  
     const handleDownloadCompleted = (_, data) => {
-      console.log(`Download completed for playlist: ${data.playlistName}`);
-      setDownloadProgress(null); // İndirme tamamlandıysa progresi sıfırla ve modalı kapat
+      console.log(`Download completed: ${data}`);
+      setDownloadProgress(null);
     };
-
+  
     window.electron.ipcRenderer.on('download-progress', handleDownloadProgress);
     window.electron.ipcRenderer.on('download-completed', handleDownloadCompleted);
-
+  
     return () => {
       window.electron.ipcRenderer.removeListener('download-progress', handleDownloadProgress);
       window.electron.ipcRenderer.removeListener('download-completed', handleDownloadCompleted);
     };
   }, []);
-
+  
+console.log("------------------------",downloadProgress)
   return (
     <>
       {isLoggin ? <Playlist data={user} /> : <Home />}
@@ -158,7 +159,7 @@ function App() {
             </div>
 
             <p>Şarkılar indiriliyor...</p>
-            <ProgressBar progress={downloadProgress.totalProgress} />
+            <ProgressBar progress={downloadProgress?.totalProgress} />
           </div>
         </div>
       )}

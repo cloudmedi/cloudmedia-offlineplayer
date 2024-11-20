@@ -253,7 +253,76 @@ console.log(props)
     }
   }, [campainArray, props?.data?.selectedPlaylist]);
 
+  async function ezanDurumuKontrol() {
+    return new Promise(function (resolve, reject) {
+      fetch("https://app.cloudmedia.com.tr/api/isezan/" + props?.data?.user.id)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("HTTP error, status = " + response.status);
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log(data);
+          EzanVaktiApi(data);
+        })
+        .catch(error => {
+          console.error("Fetch Hatası:", error);
+          reject(error);
+        });
+    });
+  }
 
+
+  function EzanVaktiApi(city) {
+    let socket;
+
+    function connectWebSocket() {
+      if (city.city != "" && city.city && city.ezan === "True") {
+        socket = new WebSocket("wss://ezansocket-v6fk.onrender.com");
+
+        socket.onopen = function (event) {
+          socket.send(city.city);
+        };
+
+        socket.onmessage = function (event) {
+          console.log("WebSocket'ten mesaj alındı:", JSON.parse(event.data)["ezan"]);
+
+          if (JSON.parse(event.data)["ezan"]["genelEzanDurumu"] === "Ezan Okunuyor" && city.ezan === "True") {
+       
+            ezanPlaying(JSON.parse(event.data)["ezan"]["dif"]);
+          }
+        };
+
+        socket.onclose = function (event) {
+          console.log("WebSocket bağlantısı kapatıldı.");
+          setTimeout(connectWebSocket, 2000);
+        };
+
+        socket.onerror = function (error) {
+          console.error("WebSocket hatası:", error);
+        };
+      } else {
+        console.log("Şehir bilgisi bulunamadı. WebSocket bağlantısı kurulamadı.");
+      }
+    }
+
+    connectWebSocket();
+  }
+
+  function ezanPlaying(dif) {
+
+ 
+    setShowModal(true);
+    pauseAudio();
+    if (dif === 10) {
+      setShowModal(false);
+      playAudio();
+    }
+  }
+  useEffect(() => {
+    ezanDurumuKontrol();
+  }, []);
 
 
   const turkishToEnglishDays = {
@@ -504,11 +573,11 @@ console.log(props)
         </div>
       </div>
       <div>
-        <audio id="audio-player" ref={audioRef1} src={music}  autoPlay={playing}  controls />
+        <audio id="audio-player" ref={audioRef1} src={music}  autoPlay={playing}   />
         <audio id="audio-player1" ref={audioRef2} autoPlay={campainPlaying} />
       </div>
       <div className="modal-container">
-        {showModal && (
+        {showModal===true && (
           <div className="modal">
             <div className="modal-content">
               <p>Ezan vakti. <br /> Yayın kısa süre sonra devam edecek </p>

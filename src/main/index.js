@@ -180,26 +180,42 @@ async function downloadSongs(songs, playlistName) {
 
   const totalSongs = songs.length;
   let completedSongs = 0;
+  let actualDownloads = false; // Gerçek indirme kontrolü için bayrak
 
   const downloadedSongs = [];
   for (const song of songs) {
     try {
-      const downloadedPath = await downloadSong(song, playlistName);
-      downloadedSongs.push({ ...song, localPath: downloadedPath, playlistName });
+      const downloadResult = await downloadSong(song, playlistName);
+      
+      // Sadece yeni indirilen şarkılar için işlem yap
+      if (downloadResult.isNewDownload) {
+        actualDownloads = true;
+        downloadedSongs.push({ ...song, localPath: downloadResult.path, playlistName });
 
-      // Progresi hesapla ve yalnızca gerçek bir indirme sırasında gönder
-      completedSongs++;
-      const totalProgress = Math.round((completedSongs / totalSongs) * 100);
-      mainWindow.webContents.send('download-progress', { playlistName, totalProgress });
+        completedSongs++;
+        const totalProgress = Math.round((completedSongs / totalSongs) * 100);
+        mainWindow.webContents.send('download-progress', { 
+          playlistName, 
+          totalProgress, 
+          actualDownloads: true 
+        });
+      } else {
+        // Zaten var olan şarkılar için
+        downloadedSongs.push({ ...song, localPath: downloadResult.path, playlistName });
+      }
 
     } catch (error) {
       console.error(`Error occurred while downloading song ${song.title}:`, error);
     }
   }
 
-  // Tüm indirmeler tamamlandıktan sonra bildirim gönder
-  if (completedSongs > 0) {
-    mainWindow.webContents.send('download-completed', { playlistName, totalProgress: 100 });
+  // Yeni indirilen şarkılar varsa tamamlanma mesajı gönder
+  if (actualDownloads) {
+    mainWindow.webContents.send('download-completed', { 
+      playlistName, 
+      totalProgress: 100,
+      actualDownloads: true 
+    });
   }
 
   return downloadedSongs;
@@ -211,9 +227,13 @@ async function downloadSong(song, playlistName) {
   const downloadPath = path.join(app.getPath('music'), 'CloudMedia', playlistName, fileName);
 
   try {
+    // Dosya zaten varsa
     await fsPromises.access(downloadPath);
     console.log(`Song already exists: ${downloadPath}`);
-    return downloadPath; // Eğer dosya varsa indirme işlemi yapılmaz
+    return { 
+      path: downloadPath, 
+      isNewDownload: false 
+    };
   } catch (error) {
     // Dosya yoksa indirme işlemine devam et
   }
@@ -230,11 +250,13 @@ async function downloadSong(song, playlistName) {
   response.data.pipe(writer);
 
   return new Promise((resolve, reject) => {
-    writer.on('finish', () => resolve(downloadPath));
+    writer.on('finish', () => resolve({ 
+      path: downloadPath, 
+      isNewDownload: true 
+    }));
     writer.on('error', reject);
   });
 }
-
 
 async function savePlaylistsLocally(playlists) {
   const playlistsPath = path.join(app.getPath('userData'), 'playlists.json');
