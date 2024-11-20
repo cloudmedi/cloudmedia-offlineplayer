@@ -4,7 +4,7 @@
   "description": "Cloudmedia desktop application",
   "main": "./out/main/index.js",
   "author": "Cloud Media",
-  "homepage": "http://http://172.16.220.25:8000",
+  "homepage": "http://172.16.220.25:8000",
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
