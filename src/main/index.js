@@ -173,15 +173,35 @@ async function getAllSongsInPlaylists(user) {
 }
 
 async function downloadSongs(songs, playlistName) {
+  if (!songs || songs.length === 0) {
+    console.log(`No songs to download for playlist: ${playlistName}`);
+    return [];
+  }
+
+  const totalSongs = songs.length;
+  let completedSongs = 0;
+
   const downloadedSongs = [];
   for (const song of songs) {
     try {
       const downloadedPath = await downloadSong(song, playlistName);
       downloadedSongs.push({ ...song, localPath: downloadedPath, playlistName });
+
+      // Progresi hesapla ve yalnızca gerçek bir indirme sırasında gönder
+      completedSongs++;
+      const totalProgress = Math.round((completedSongs / totalSongs) * 100);
+      mainWindow.webContents.send('download-progress', { playlistName, totalProgress });
+
     } catch (error) {
       console.error(`Error occurred while downloading song ${song.title}:`, error);
     }
   }
+
+  // Tüm indirmeler tamamlandıktan sonra bildirim gönder
+  if (completedSongs > 0) {
+    mainWindow.webContents.send('download-completed', { playlistName, totalProgress: 100 });
+  }
+
   return downloadedSongs;
 }
 
@@ -193,9 +213,9 @@ async function downloadSong(song, playlistName) {
   try {
     await fsPromises.access(downloadPath);
     console.log(`Song already exists: ${downloadPath}`);
-    return downloadPath;
+    return downloadPath; // Eğer dosya varsa indirme işlemi yapılmaz
   } catch (error) {
-    // File doesn't exist, proceed with download
+    // Dosya yoksa indirme işlemine devam et
   }
 
   await fsPromises.mkdir(path.dirname(downloadPath), { recursive: true });
@@ -214,6 +234,7 @@ async function downloadSong(song, playlistName) {
     writer.on('error', reject);
   });
 }
+
 
 async function savePlaylistsLocally(playlists) {
   const playlistsPath = path.join(app.getPath('userData'), 'playlists.json');

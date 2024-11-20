@@ -157,7 +157,21 @@ audio {
   border: 1px solid #D9D9D9;
 
 }
+.progress-bar {
+  width: 100%;
+  background-color: #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  height: 20px;
+  margin-top: 10px;
+}
 
+.progress {
+  height: 100%;
+  background-color: #76c7c0;
+  width: 0%;
+  transition: width 0.3s;
+}
 .modal-content p {
   font-family: Arial;
   font-size: 16px;
