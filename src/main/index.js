@@ -412,7 +412,7 @@ async function startPlaylistAndCampaignSync() {
     } catch (error) {
       console.error("Error during sync:", error);
     }
-  }, 12000); // Run every 12 seconds
+  }, 1000*60); // Run every 12 seconds
 }
 
 async function deleteOrphanedSongs(currentPlaylists) {
